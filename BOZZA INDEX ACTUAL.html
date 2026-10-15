@@ -1792,6 +1792,9 @@ body.bzfx-no-animations *,body.bzfx-no-animations *::before,body.bzfx-no-animati
           <button class="btn btn-primary" onclick="showPage('products')">
             Descubrir productos
           </button>
+          <div id="lista-productos">
+  Cargando productos...
+</div>
 
           <button class="btn btn-outline" onclick="showPage('services')">
             Ver servicios
@@ -10551,13 +10554,59 @@ document.addEventListener('DOMContentLoaded',()=>{const mat=document.getElementB
 
 
 </script>
-</body>
-<script>document.addEventListener("DOMContentLoaded",()=>{if(typeof bozzaAssistantRenderWelcome==="function")bozzaAssistantRenderWelcome();});</script>
+<!-- Conexión con Supabase - BOZZA -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 <script>
-const supabaseUrl = "https://cjxgpkeairfemxrmnukdm.supabase.co";
-const supabaseKey = "sb_publishable_6wC78bMArBFxnvm6PCsbzw_Ee5kMGwW";
-const { createClient } = supabase;
-const supabase = createClient(supabaseUrl, supabaseKey);
-console.log("✅ Conectada a Supabase!");
+  const SUPABASE_URL = "https://cjxgpkeirfamxrmnukdm.supabase.co";
+  const SUPABASE_KEY = "sb_publishable_6wC78bMArBFxnvm6PCsbzw_Ee5kMGwW";
+
+  const { createClient } = supabase;
+  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  async function cargarProductos() {
+    const { data: productos, error } = await supabase
+      .from('productos')
+      .select('*');
+
+    const contenedor = document.getElementById('lista-productos');
+    
+    if (!contenedor) {
+      console.log('Contenedor no encontrado');
+      return;
+    }
+
+    if (error) {
+      contenedor.innerHTML = `<p style="color:red;">Error: ${error.message}</p>`;
+      return;
+    }
+
+    if (productos.length === 0) {
+      contenedor.innerHTML = `<p>No hay productos disponibles todavía.</p>`;
+      return;
+    }
+
+    contenedor.innerHTML = '';
+    productos.forEach(p => {
+      contenedor.innerHTML += `
+        <div style="border:1px solid #e2e8f0; padding:15px; margin:10px 0; border-radius:10px; background:white;">
+          <h3 style="margin:0 0 8px 0;">${p.nombre}</h3>
+          <p style="margin:0 0 8px 0; color:#666;">${p.descripcion || ''}</p>
+          <p style="font-weight:bold; font-size:18px; color:#2d3748;">${p.precio} ₲</p>
+        </div>
+      `;
+    });
+  }
+
+  cargarProductos();
 </script>
+
+<script>
+document.addEventListener("DOMContentLoaded", () => {
+  if (typeof bozzaAssistantRenderWelcome === "function") {
+    bozzaAssistantRenderWelcome();
+  }
+});
+</script>
+
+</body>
 </html>
