@@ -1,4 +1,4 @@
-<!DOCTYPE html>
+  <!DOCTYPE html>
 <html lang="es">
 <head>
 <meta charset="UTF-8">
@@ -10608,5 +10608,35 @@ document.addEventListener("DOMContentLoaded", () => {
 });
 </script>
 
+<script>
+// Botón para agregar productos directo desde tu web a Supabase
+const btn = document.createElement('button');
+btn.textContent = '+ Agregar producto a BD';
+btn.style = 'position:fixed;bottom:90px;right:16px;z-index:999;background:#80669b;color:white;padding:14px 18px;border-radius:30px;border:none;cursor:pointer;';
+btn.onclick = async () => {
+  const nombre = prompt('Nombre:'); if(!nombre) return;
+  const precio = prompt('Precio Gs.:'); if(!precio) return;
+  const descripcion = prompt('Descripción:')||'';
+  const {error} = await supabase.from('productos').insert([{nombre, precio: Number(precio), descripcion}]);
+  if(error) alert(error.message); else {alert('Guardado!'); location.reload();}
+};
+document.body.appendChild(btn);
+</script>
+<!-- AGREGAR PRODUCTOS DESDE TU WEB (sin entrar a Supabase) -->
+<style>
+#btnAddWeb{position:fixed;bottom:20px;right:16px;z-index:9999;background:#80669b;color:white;padding:14px 20px;border-radius:30px;border:none;box-shadow:0 4px 12px rgba(0,0,0,.2);cursor:pointer;font-weight:600;}
+</style>
+<button id="btnAddWeb">+ Agregar producto</button>
+<script>
+document.getElementById('btnAddWeb').onclick = async ()=>{
+  const nombre = prompt('Nombre del producto:'); if(!nombre) return;
+  const precio = prompt('Precio Gs.:'); if(!precio) return;
+  const descripcion = prompt('Descripción:')||'';
+  const categoria = prompt('Categoría (Fundas, Moños, Lentes):')||'Fundas';
+  const {error} = await supabase.from('productos').insert([{nombre, precio: Number(precio), descripcion, categoria, stock:10}]);
+  if(error){ alert('Error: '+error.message); } 
+  else { alert('✅ Producto guardado!'); if(window.cargarProductos) cargarProductos(); else location.reload(); }
+};
+</script>
 </body>
 </html>
